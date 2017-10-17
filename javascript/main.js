@@ -1,4 +1,5 @@
 
+<<<<<<< HEAD
 // this is are map
 var land = ["############################",
             "#      #    #      o      ##",
@@ -378,3 +379,5 @@ PlantEater.prototype.act = function(view) {
   if (space)
     return {type: "move", direction: space};
 };
+=======
+>>>>>>> 9f2b3e9ec41e470942a8c443edb0a2b666b0e090
