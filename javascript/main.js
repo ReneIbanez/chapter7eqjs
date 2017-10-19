@@ -1,5 +1,3 @@
-
-<<<<<<< HEAD
 // this is are map
 var land = ["############################",
             "#      #    #      o      ##",
@@ -67,16 +65,12 @@ Grid.prototype.isInside = function(vector) {
 Grid.prototype.get = function(vector) {
   return this.space[vector.x + this.width * vector.y];
 };
+
+// takes a two deminaial array and turn it into a singal demitianal array
 Grid.prototype.set = function(vector, value) {
   this.space[vector.x + this.width * vector.y] = value;
 };
-// constructed grid
-var grid = new Grid(5, 5);
-console.log(grid.get(new Vector(1, 1)));
 
-
-grid.set(new Vector(1, 1), "X");
-console.log(grid.get(new Vector(1, 1)));
 
 // object of strings and new object
 var directions = {
@@ -114,6 +108,7 @@ BouncingCritter.prototype.act = function(view) {
 function elementFromChar(legend, ch) {
   if (ch == " ")
     return null;
+}
   var element = new legend[ch]();
   element.originChar = ch;
   return element;
@@ -138,9 +133,9 @@ function charFromElement(element) {
   else
     return element.originChar;
 }
-
+//
 World.prototype.toString = function() {
-  var output = "";
+  var output = ""; //resets
   for (var y = 0; y < this.grid.height; y++) {
     for (var x = 0; x < this.grid.width; x++) {
       var element = this.grid.get(new Vector(x, y));
@@ -173,7 +168,7 @@ Grid.prototype.forEach = function(f, context) {
   }
 };
 
-
+//
 var world = new World(land, {"#": Wall,
                              "o": BouncingCritter});
 console.log(world.toString());
@@ -277,18 +272,17 @@ WallFollower.prototype.act = function(view) {
   return {type: "move", direction: this.dir};
 };
 
-// animateWorld(new World(
-//   ["############",
-//    "#     #    #",
-//    "#   ~    ~ #",
-//    "#  ##      #",
-//    "#  ##  o####",
-//    "#          #",
-//    "############"],
-//   {"#": Wall,
-//    "~": WallFollower,
-//    "o": BouncingCritter}
-// ));
+animateWorld(new World(
+  ["############",
+   "#     #    #",
+   "#   ~    ~ #",
+   "#  ##      #",
+   "#  ##  o####",
+   "#          #",
+   "############"],
+  {"#": Wall,
+   "~": WallFollower,
+   "o": BouncingCritter}
 
 function LifelikeWorld(map, legend) {
   World.call(this, map, legend);
@@ -379,5 +373,3 @@ PlantEater.prototype.act = function(view) {
   if (space)
     return {type: "move", direction: space};
 };
-=======
->>>>>>> 9f2b3e9ec41e470942a8c443edb0a2b666b0e090
