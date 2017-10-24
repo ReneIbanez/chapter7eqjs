@@ -12,6 +12,9 @@ var plan = ["############################",
             "#    #                     #",
             "############################"];
 
+
+document.getElementById("start").onclick = go;
+document.getElementById("stop").onclick = freeze;
 // setting are coorfdinites
 function Vector(x, y) {
     this.x = x;
@@ -19,20 +22,34 @@ function Vector(x, y) {
 }
 // plus meathod to return a new vector with updated coordinites
 Vector.prototype.plus = function(other) {
+  //todo a conditional to max x+x < 10 and y+y < 10
   return new Vector(this.x + other.x, this.y + other.y);
 }
 
-
+//constructor for Grid to start to build a grid to start to make the plan array come to life
 function Grid(width, height) {
     this.space = new Array(width * height);
     this.width = width;
     this.height = height;
   }
-// going to see if it in the vector you have created
+// going to see if it in the vector coordinates you have created
 Grid.prototype.isInside = function(vector) {
   return vector.x >= 0 && vector.x < this.width &&
          vector.y >= 0 && vector.y < this.height;
 };
+// 
+Grid.prototype.forEach = function(f, context) {
+  for (var y = 0; y < this.height; y++) {
+    for (var x = 0; x < this.width; x++) {
+      var value = this.space[x + y * this.width];
+      if (value != null)
+        f.call(context, value, new Vector(x, y));
+    }
+  }
+};
+
+//these next two methods finding the position in the array and setting or getting the value from that position in the space array
+
 Grid.prototype.get = function(vector) {
   return this.space[vector.x + this.width * vector.y];
 };
@@ -46,13 +63,13 @@ var directions = {
   "n":  new Vector( 0, -1),
   "ne": new Vector( 1, -1),
   "e":  new Vector( 1,  0),
-  "se": new Vector( 5,  1),
+  "se": new Vector( 1,  1),
   "s":  new Vector( 0,  1),
-  "sw": new Vector(-1,  5),
+  "sw": new Vector(-1,  1),
   "w":  new Vector(-1,  0),
   "nw": new Vector(-1, -1)
 };
-
+//used with directions array it will move critters random directions
 function randomElement(array) {
   return array[Math.floor(Math.random() * array.length)];
 }
@@ -65,10 +82,10 @@ function Wall(){
 function BouncingCritter() {
   this.direction = randomElement(directionNames);
 };
-
+//this will have the critter look to make sure the space is empty or go south
 BouncingCritter.prototype.act = function(view) {
-  if (view.look(this.direction) != "")
-    this.direction = view.find("") || "sw";
+  if (view.look(this.direction) != " ")
+    this.direction = view.find(" ") || "s";
   return {type: "move", direction: this.direction};
 };
 
@@ -80,7 +97,7 @@ function elementFromChar(legend, ch) {
   if (ch == " ")
     return null;
 
-
+//it is taking the legend and creating a new object from the legend and returning that new object
   var element = new legend[ch]();
   element.originChar = ch;
   return element;
@@ -97,8 +114,10 @@ function View(world, vector) {
   this.world = world;
   this.vector = vector;
 }
+//detecting connection and if the critter is going into another object. returning # or char at the target
+
 View.prototype.look = function(dir) {
-  var target = this.vector.plus(directions[dir]);
+  var target = this.vector.plus(directions[dir ]);
   if (this.world.grid.isInside(target))
     return charFromElement(this.world.grid.get(target));
   else
@@ -153,7 +172,7 @@ World.prototype.checkDestination = function(action, vector) {
       return dest;
   }
 };
-
+//  let the critter move
 World.prototype.letAct = function(critter, vector) {
   var action = critter.act(new View(this, vector));
   if (action && action.type == "move") {
@@ -164,7 +183,7 @@ World.prototype.letAct = function(critter, vector) {
     }
   }
 };
-
+//checking to see if the critter has acted
 World.prototype.turn = function() {
   var acted = [];
   this.grid.forEach(function(critter, vector) {
@@ -174,6 +193,23 @@ World.prototype.turn = function() {
     }
   }, this);
 };
+//sets the legend into a world object and the plan array to create the world and how it looks
+var world = new World(plan, {"#": Wall,"o": BouncingCritter});
 
-var world = new World(plan, {"#": Wall,
-                             "o": BouncingCritter});
+// for (var i = 0; i < 5; i++) {
+//   world.turn();
+//   console.log(world.toString());
+//   }
+
+var goWorld = null;
+function go(){
+  goWorld = setInterval(function(){
+    world.turn();
+    document.getElementById("display").innerHTML = '<pre>'+world+'</pre>' ;
+  },400);
+}
+
+
+function freeze(){
+  clearInterval(goWorld);
+}
